@@ -123,3 +123,20 @@ edit = Task(
                     "each section should have 2 or 3 paragraphs.",
     agent = editor 
 )
+
+# Creating the Crew
+# Attrebutes = agents, tasks, verbose 
+# by default crew performs tasks sequentially so order matters
+crew = Crew (
+    agents = [planner, writer, editor],
+    tasks = [plan, write,edit],
+    verbose = 2 # define how much verbosity of logs 
+)
+
+topic = input ("Please enter your topic")
+# Running the Crew
+result = crew.kickoff(inputs = {"topic":topic})
+
+from IPython.display import Markdown 
+
+Markdown(result)
