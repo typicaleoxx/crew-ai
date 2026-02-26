@@ -7,11 +7,14 @@ warnings.filterwarnings("ignore")
 from crewai import Agent, Task, Crew
 
 import os
-from utils import get_openai_api_key
+from utils import get_groq_api_key
+from crewai import LLM
 
-openai_api_key = get_openai_api_key()
-os.environ["OPENAI_API_KEY"] = openai_api_key
-os.environ["OPENAI_MODEL_NAME"] = "gpt-3.5-turbo"
+groq_api_key = get_groq_api_key()
+os.environ["GROQ_API_KEY"] = groq_api_key
+
+# Configure Groq LLM (Free!)
+llm = LLM(model="groq/llama-3.3-70b-versatile", api_key=groq_api_key)
 
 # Creating Agents
 # Define your Agents and provide role, goal and backstory
@@ -23,6 +26,7 @@ os.environ["OPENAI_MODEL_NAME"] = "gpt-3.5-turbo"
 planner = Agent(
     role="Content Planner",
     goal="Plan engaging and factually accurate content on {topic}",
+    llm=llm,
     backstory="You are working on planning a blog article about the topic: {topic}"
     "You collect information that helps the audience learn something and make informed decisions"
     "Your work is the basis for the Content Writer to write an article on this topic.",
@@ -35,6 +39,7 @@ writer = Agent(
     role="Content Writer",
     goal="Write insightful and factually accurate "
     "Opinion piece about the topic: {topic}",
+    llm=llm,
     backstory="You're working on a writing "
     "a new opinion piece about the topic: {topic}. "
     "You base your writing on the work of "
@@ -58,6 +63,7 @@ editor = Agent(
     role="Editor",
     goal="Edit a given blog post to align with "
     "the writing style of the organization. ",
+    llm=llm,
     backstory="You are an editor who receives a blog post "
     "from the Content Writer. "
     "Your goal is to review the blog post "
@@ -137,6 +143,8 @@ topic = input("Please enter your topic")
 # Running the Crew
 result = crew.kickoff(inputs={"topic": topic})
 
-from IPython.display import Markdown
-
-Markdown(result)
+# Print the result
+print("\n" + "=" * 80)
+print("RESULT:")
+print("=" * 80 + "\n")
+print(result.raw)
